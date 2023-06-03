@@ -5,7 +5,7 @@
 mod components;
 mod fonts;
 
-use std::{rc::Rc, collections::HashMap};
+use std::{rc::Rc, collections::{HashMap, hash_map::Entry}};
 
 use eframe::egui;
 
@@ -21,12 +21,32 @@ pub struct ReviewToolApp {
 }
 
 impl ReviewToolApp {
-    pub fn new(cc: &eframe::CreationContext<'_>, manuscripts: Vec<Rc<types::Manuscript>>) -> Self {
+    pub fn new(cc: &eframe::CreationContext<'_>, manuscripts: Vec<Rc<types::Manuscript>>) -> Result<Self, Error> {
+        if manuscripts.is_empty() {
+            return Err(Error::NoManuscript)
+        }
+
         cc.egui_ctx.set_fonts(create_font_def());
-        Self {
+        Ok(Self {
             manuscripts,
             rank: HashMap::default(),
             current_selected: 0,
+        })
+    }
+
+    pub(crate) fn get_current_manuscript(&self) -> &Rc<types::Manuscript> {
+        self
+            .manuscripts
+            .get(self.current_selected)
+            .unwrap_or_else(|| &self.manuscripts[0])
+    }
+
+    pub(crate) fn get_current_rank_or_set_default(&mut self) -> &mut Rank {
+        let selected = self.get_current_manuscript().clone();
+
+        match self.rank.entry(selected) {
+            Entry::Occupied(entry) => entry.into_mut(),
+            Entry::Vacant(entry) => entry.insert(Rank::default()),
         }
     }
 }
@@ -69,4 +89,10 @@ impl eframe::App for ReviewToolApp {
                 });
         });
     }
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("expected at least 1 manuscript; nothing given.")]
+    NoManuscript,
 }

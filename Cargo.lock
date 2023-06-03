@@ -1783,6 +1783,7 @@ dependencies = [
  "egui_extras",
  "indoc",
  "serde",
+ "thiserror",
  "tracing",
  "tracing-subscriber",
 ]
