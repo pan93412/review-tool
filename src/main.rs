@@ -19,7 +19,9 @@ fn main() {
         "Review Tool",
         options,
         Box::new(|cc| {
-            Box::new(review_tool::ui::ReviewToolApp::<()>::new(cc, manuscripts).unwrap())
+            Box::new(
+                review_tool::ui::ReviewToolApp::<sitcon_gdsc::Group>::new(cc, manuscripts).unwrap(),
+            )
         }),
     )
     .expect("failed to start UI");
