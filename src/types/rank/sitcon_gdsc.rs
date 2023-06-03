@@ -60,6 +60,14 @@ pub mod subject {
 
             Some(result)
         }
+
+        fn name(&self) -> &str {
+            "主題相關性"
+        }
+
+        fn description(&self) -> Option<&str> {
+            Some("和學生、社群以及程式相關的議題，且與 FLOSS（自由/開放原始碼軟體）相關。")
+        }
     }
 }
 

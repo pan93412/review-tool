@@ -27,6 +27,12 @@ pub trait Item: Sized {
 
 /// A group of items.
 pub trait ItemGroup {
+    /// The name of this group.
+    fn name(&self) -> &str;
+
+    /// The description of this group.
+    fn description(&self) -> Option<&str>;
+
     /// The score of this group.
     fn score(&self) -> f64;
 

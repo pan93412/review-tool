@@ -11,32 +11,12 @@ pub struct Rank {
 
 impl Rank {
     pub fn show(&mut self, ui: &mut eframe::egui::Ui) {
-        ui.heading("主題相關性");
-
-        egui::Grid::new("主題相關性")
-            .min_col_width(ui.available_width() / 3.0)
-            .max_col_width(ui.available_width() / 1.5)
-            .min_row_height(ui.available_height())
-            .spacing([24.0, 12.0])
-            .show(ui, |ui| {
-                ui.vertical(|ui| {
-                    ui.add(&mut ChoiceWidget::new(&mut self.group.subject.student_related));
-                    ui.add(&mut ChoiceWidget::new(&mut self.group.subject.community_related));
-                    ui.add(&mut ChoiceWidget::new(&mut self.group.subject.coding_related));
-                    ui.add(&mut ChoiceWidget::new(&mut self.group.subject.floss_related));
-                });
-
-                ui.vertical(|ui| {
-                    ui.horizontal(|ui| {
-                        ui.label("總分");
-                        ui.add(DragValue::new(&mut self.group.subject.score()));
-                    });
-
-                    ui.label("分數描述");
-                    ui.text_edit_multiline(&mut self.group.subject.score_description().unwrap_or_default())
-                });
-                ui.end_row();
-            });
+        render_item_group(&mut self.group.subject, ui, |ui, group| {
+            ui.add(&mut ChoiceWidget::new(&mut group.student_related));
+            ui.add(&mut ChoiceWidget::new(&mut group.community_related));
+            ui.add(&mut ChoiceWidget::new(&mut group.coding_related));
+            ui.add(&mut ChoiceWidget::new(&mut group.floss_related));
+        });
     }
 }
 
@@ -44,6 +24,33 @@ impl ReviewToolApp {
     pub(crate) fn rank(&mut self, ui: &mut eframe::egui::Ui) {
         self.rank.show(ui);
     }
+}
+
+fn render_item_group<G: ItemGroup>(group: &mut G, ui: &mut eframe::egui::Ui, add_choice_widget: impl FnOnce(&mut eframe::egui::Ui, &mut G)) {
+    ui.heading(group.name());
+    group.description().map(|d| ui.label(d));
+
+    egui::Grid::new(group.name())
+        .min_col_width(ui.available_width() / 3.0)
+        .max_col_width(ui.available_width() / 1.5)
+        .min_row_height(ui.available_height())
+        .spacing([24.0, 12.0])
+        .show(ui, |ui| {
+            ui.vertical(|ui| {
+                add_choice_widget(ui, group);
+            });
+
+            ui.vertical(|ui| {
+                ui.horizontal(|ui| {
+                    ui.label("總分");
+                    ui.add(DragValue::new(&mut group.score()));
+                });
+
+                ui.label("分數描述");
+                ui.text_edit_multiline(&mut group.score_description().unwrap_or_default())
+            });
+            ui.end_row();
+        });
 }
 
 /// The choice widget.
