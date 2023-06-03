@@ -1,5 +1,3 @@
-use std::rc::Rc;
-
 use review_tool::types::deserialize::{deserialize, Format};
 
 fn main() {
@@ -11,9 +9,7 @@ fn main() {
 
         deserialize(Format::SitconGdsc, file).expect("failed to deserialize manuscripts")
     }
-    .into_iter()
-    .map(Rc::new)
-    .collect();
+    .into();
 
     let options = eframe::NativeOptions::default();
     eframe::run_native(
@@ -21,5 +17,5 @@ fn main() {
         options,
         Box::new(|cc| Box::new(review_tool::ui::ReviewToolApp::new(cc, manuscripts).unwrap())),
     )
-    .expect("failed to start UI")
+    .expect("failed to start UI");
 }

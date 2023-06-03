@@ -5,51 +5,45 @@
 mod components;
 mod fonts;
 
-use std::{
-    collections::{hash_map::Entry, HashMap},
-    rc::Rc,
-};
+use std::collections::{hash_map::Entry, HashMap};
 
 use eframe::egui;
 
-use crate::types;
+use crate::types::{ManuscriptDatabase, RcManuscript, RcManuscriptId};
 
 use self::{components::rank::Rank, fonts::create_font_def};
 
 pub struct ReviewToolApp {
-    manuscripts: Vec<Rc<types::Manuscript>>,
-    rank: HashMap<Rc<types::Manuscript>, Rank>,
+    manuscripts: ManuscriptDatabase,
+    rank: HashMap<RcManuscriptId, Rank>,
 
-    current_selected: usize,
+    current_selected: RcManuscriptId,
 }
 
 impl ReviewToolApp {
     pub fn new(
         cc: &eframe::CreationContext<'_>,
-        manuscripts: Vec<Rc<types::Manuscript>>,
+        manuscripts: ManuscriptDatabase,
     ) -> Result<Self, Error> {
-        if manuscripts.is_empty() {
-            return Err(Error::NoManuscript);
-        }
+        let first_manuscript = manuscripts.first().ok_or(Error::NoManuscript)?.clone();
 
         cc.egui_ctx.set_fonts(create_font_def());
+
         Ok(Self {
+            rank: HashMap::with_capacity(manuscripts.len()),
             manuscripts,
-            rank: HashMap::default(),
-            current_selected: 0,
+            current_selected: first_manuscript,
         })
     }
 
-    pub(crate) fn get_current_manuscript(&self) -> &Rc<types::Manuscript> {
+    pub(crate) fn get_current_manuscript(&self) -> &RcManuscript {
         self.manuscripts
-            .get(self.current_selected)
-            .unwrap_or_else(|| &self.manuscripts[0])
+            .get(&self.current_selected)
+            .unwrap_or_else(|| self.manuscripts.values().next().expect("must have one"))
     }
 
     pub(crate) fn get_current_rank_or_set_default(&mut self) -> &mut Rank {
-        let selected = self.get_current_manuscript().clone();
-
-        match self.rank.entry(selected) {
+        match self.rank.entry(self.current_selected.clone()) {
             Entry::Occupied(entry) => entry.into_mut(),
             Entry::Vacant(entry) => entry.insert(Rank::default()),
         }
