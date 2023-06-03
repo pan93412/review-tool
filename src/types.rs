@@ -4,7 +4,7 @@ pub mod deserialize;
 pub mod rank;
 
 /// The difficulty of a manuscript.
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Difficulty {
     Easy = 1,
     Medium = 2,
@@ -28,7 +28,7 @@ impl std::fmt::Display for Difficulty {
 }
 
 /// The author of a manuscript.
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, Hash)]
 pub struct Author {
     /// The author of this manuscript.
     pub name: String,
@@ -38,7 +38,7 @@ pub struct Author {
 }
 
 /// The manuscript.
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, Hash)]
 pub struct Manuscript {
     /// The title of this manuscript.
     pub title: String,
