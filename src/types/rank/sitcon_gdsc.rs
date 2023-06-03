@@ -46,6 +46,18 @@ pub mod subject {
 
             topic_score + floss_score
         }
+
+        fn score_description(&self) -> Option<String> {
+            let result = format!(
+                "和學生{stu}、社群{com}以及程式{cod}相關的議題，且與 FLOSS（自由/開放原始碼軟體）相關{fls}。",
+                stu=self.student_related.choice().as_emoji(),
+                com=self.community_related.choice().as_emoji(),
+                cod=self.coding_related.choice().as_emoji(),
+                fls=self.floss_related.choice().as_emoji(),
+            );
+
+            Some(result)
+        }
     }
 }
 

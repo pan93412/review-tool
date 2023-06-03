@@ -27,6 +27,9 @@ pub trait Item: Sized {
 pub trait ItemGroup {
     /// The score of this group.
     fn score(&self) -> f64;
+
+    /// The description of the score.
+    fn score_description(&self) -> Option<String>;
 }
 
 /// The standard choice for ranking.
@@ -53,6 +56,18 @@ impl AsRef<str> for StandardChoice {
             StandardChoice::Partial => "部分符合要求",
             StandardChoice::Maybe => "可能符合要求",
             StandardChoice::No => "完全不符合要求",
+        }
+    }
+}
+
+impl StandardChoice {
+    /// Show choice as emoji.
+    pub fn as_emoji(&self) -> &'static str {
+        match self {
+            StandardChoice::Full => "✅",
+            StandardChoice::Partial => "👌",
+            StandardChoice::Maybe => "🤔",
+            StandardChoice::No => "⚠️",
         }
     }
 }
