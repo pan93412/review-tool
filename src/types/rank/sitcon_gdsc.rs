@@ -1,5 +1,7 @@
 //! The rank items of SITCON x GDSC in Pan rules.
 
+use serde::{Serialize, Deserialize};
+
 /// 主題相關：和學生、社群以及程式相關的議題，且與 FLOSS（自由/開放原始碼軟體）相關。
 pub mod subject {
     use serde::{Serialize, Deserialize};
@@ -9,18 +11,18 @@ pub mod subject {
     super::new_rank!(StudentRelated, "和學生相關", None);
     super::new_rank!(CommunityRelated, "和社群相關", None);
     super::new_rank!(CodingRelated, "和程式相關", None);
-    super::new_rank!(FLOSSRelated, "和開源相關", None);
-
-    #[derive(Default, Serialize, Deserialize, Hash, Eq, PartialEq, Debug)]
-    pub struct Group {
-        pub student_related: StudentRelated,
-        pub community_related: CommunityRelated,
-        pub coding_related: CodingRelated,
-
-        pub floss_related: FLOSSRelated,
-    }
+    super::new_rank!(FlossRelated, "和開源相關", None);
+    super::new_group!(StudentRelated, CommunityRelated, CodingRelated, FlossRelated);
 
     impl ItemGroup for Group {
+        fn name(&self) -> &str {
+            "主題相關性"
+        }
+
+        fn description(&self) -> Option<&str> {
+            Some("和學生、社群以及程式相關的議題，且與 FLOSS（自由/開放原始碼軟體）相關。")
+        }
+
         fn score(&self) -> f64 {
             let topic_score = [
                 self.student_related.choice(),
@@ -60,14 +62,6 @@ pub mod subject {
 
             Some(result)
         }
-
-        fn name(&self) -> &str {
-            "主題相關性"
-        }
-
-        fn description(&self) -> Option<&str> {
-            Some("和學生、社群以及程式相關的議題，且與 FLOSS（自由/開放原始碼軟體）相關。")
-        }
     }
 }
 
@@ -78,10 +72,12 @@ pub struct Group {
 
 macro_rules! new_rank {
     ($name:ident, $display_name:expr, $description:expr) => {
-        #[derive(Default, ::serde::Serialize, ::serde::Deserialize, Hash, Eq, PartialEq, Debug)]
-        pub struct $name {
-            comment: Option<String>,
-            choice: crate::types::rank::StandardChoice,
+        ::paste::paste! {
+            #[derive(Default, ::serde::Serialize, ::serde::Deserialize, Hash, Eq, PartialEq, Debug)]
+            pub struct $name {
+                comment: Option<String>,
+                choice: crate::types::rank::StandardChoice,
+            }
         }
 
         impl crate::types::rank::Item for $name {
@@ -111,5 +107,18 @@ macro_rules! new_rank {
         }
     };
 }
-pub(self) use new_rank;
-use serde::{Serialize, Deserialize};
+
+macro_rules! new_group {
+    ($($entries:ident),+) => {
+        ::paste::paste! {
+            #[derive(Default, Serialize, Deserialize, Hash, Eq, PartialEq, Debug)]
+            pub struct Group {
+                $(
+                    pub [< $entries:snake >]: $entries
+                ),+
+            }
+        }
+    }
+}
+
+pub(self) use {new_rank, new_group};
