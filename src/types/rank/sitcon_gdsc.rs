@@ -4,8 +4,6 @@ use serde::{Serialize, Deserialize};
 
 /// 主題相關：和學生、社群以及程式相關的議題，且與 FLOSS（自由/開放原始碼軟體）相關。
 pub mod subject {
-    use serde::{Serialize, Deserialize};
-
     use crate::types::rank::{ItemGroup, StandardChoice, Item};
 
     super::new_rank!(StudentRelated, "和學生相關", None);
@@ -111,7 +109,7 @@ macro_rules! new_rank {
 macro_rules! new_group {
     ($($entries:ident),+) => {
         ::paste::paste! {
-            #[derive(Default, Serialize, Deserialize, Hash, Eq, PartialEq, Debug)]
+            #[derive(Default, ::serde::Serialize, ::serde::Deserialize, Hash, Eq, PartialEq, Debug)]
             pub struct Group {
                 $(
                     pub [< $entries:snake >]: $entries
