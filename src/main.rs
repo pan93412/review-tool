@@ -20,7 +20,7 @@ fn main() {
         "Review Tool",
         options,
         Box::new(|cc| {
-            Box::new(review_tool::ui::ReviewToolApp::new(cc, manuscripts))
+            Box::new(review_tool::ui::ReviewToolApp::new(cc, manuscripts).unwrap())
         }),
     )
     .expect("failed to start UI")
