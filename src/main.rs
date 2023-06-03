@@ -1,4 +1,7 @@
-use review_tool::types::deserialize::{deserialize, Format};
+use review_tool::types::{
+    deserialize::{deserialize, Format},
+    rank::sitcon_gdsc,
+};
 
 fn main() {
     tracing_subscriber::fmt::init();
@@ -15,7 +18,9 @@ fn main() {
     eframe::run_native(
         "Review Tool",
         options,
-        Box::new(|cc| Box::new(review_tool::ui::ReviewToolApp::new(cc, manuscripts).unwrap())),
+        Box::new(|cc| {
+            Box::new(review_tool::ui::ReviewToolApp::<()>::new(cc, manuscripts).unwrap())
+        }),
     )
     .expect("failed to start UI");
 }

@@ -3,25 +3,27 @@ use std::ops::{Deref, DerefMut};
 use egui::{DragValue, Widget};
 
 use crate::{
-    types::rank::{sitcon_gdsc, Item, ItemGroup, StandardChoice},
+    types::rank::{sitcon_gdsc, Item, ItemGroup, MetaGroup, StandardChoice},
     ui::ReviewToolApp,
 };
 
-#[derive(Default)]
-pub struct Rank {
-    pub(crate) group: sitcon_gdsc::Group,
+pub struct RankComponent<'a, M: MetaGroup>(pub(crate) &'a mut M);
+
+/// Add `rank()` to Review Tool App. This trait is for specialization.
+pub(crate) trait AppRankExtension {
+    fn rank(&mut self, ui: &mut eframe::egui::Ui);
 }
 
-impl Rank {
-    pub fn show(&mut self, ui: &mut eframe::egui::Ui) {
-        render_item_group(&mut self.group.subject, ui, |ui, group| {
+impl<'a> RankComponent<'a, sitcon_gdsc::Group> {
+    fn show(&mut self, ui: &mut eframe::egui::Ui) {
+        render_item_group(&mut self.0.subject, ui, |ui, group| {
             ui.add(&mut ChoiceWidget::new(&mut group.student_related));
             ui.add(&mut ChoiceWidget::new(&mut group.community_related));
             ui.add(&mut ChoiceWidget::new(&mut group.coding_related));
             ui.add(&mut ChoiceWidget::new(&mut group.floss_related));
         });
 
-        render_item_group(&mut self.group.expressive, ui, |ui, group| {
+        render_item_group(&mut self.0.expressive, ui, |ui, group| {
             ui.add(&mut ChoiceWidget::new(&mut group.organized));
             ui.add(&mut ChoiceWidget::new(&mut group.fluent));
             ui.add(&mut ChoiceWidget::new(&mut group.completeness));
@@ -29,9 +31,15 @@ impl Rank {
     }
 }
 
-impl ReviewToolApp {
-    pub(crate) fn rank(&mut self, ui: &mut eframe::egui::Ui) {
-        self.get_current_rank_or_set_default().show(ui)
+impl<M: MetaGroup> AppRankExtension for ReviewToolApp<M> {
+    default fn rank(&mut self, ui: &mut eframe::egui::Ui) {
+        ui.label("This meta group has not been supported, sorry :(");
+    }
+}
+
+impl AppRankExtension for ReviewToolApp<sitcon_gdsc::Group> {
+    fn rank(&mut self, ui: &mut eframe::egui::Ui) {
+        RankComponent(self.get_current_rank_or_set_default()).show(ui)
     }
 }
 

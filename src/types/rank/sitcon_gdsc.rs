@@ -2,6 +2,8 @@
 
 use serde::{Deserialize, Serialize};
 
+use super::MetaGroup;
+
 /// 主題相關：和學生、社群以及程式相關的議題，且與 FLOSS（自由/開放原始碼軟體）相關。
 pub mod subject {
     use crate::types::rank::{Item, ItemGroup, StandardChoice};
@@ -123,6 +125,8 @@ pub struct Group {
     pub subject: subject::Group,
     pub expressive: expressive::Group,
 }
+
+impl MetaGroup for Group {}
 
 macro_rules! new_rank {
     ($name:ident, $display_name:expr, $description:expr) => {

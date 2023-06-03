@@ -70,8 +70,8 @@ pub struct Manuscript {
 }
 
 /// The SHA-256 ID of the manuscript.
-#[derive(Serialize, Deserialize, Hash, PartialEq, Eq, Debug)]
-pub struct ManuscriptId(pub Vec<u8>);
+#[derive(Serialize, Deserialize, Hash, PartialEq, Eq, Debug, Clone, Copy)]
+pub struct ManuscriptId(pub [u8; 32]);
 
 impl ManuscriptId {
     pub fn hash(m: &Manuscript) -> Self {
@@ -82,24 +82,23 @@ impl ManuscriptId {
         hasher.update(&m.author.name);
         hasher.update(&m.type_);
 
-        Self(hasher.finalize().to_vec())
+        Self(hasher.finalize().into())
     }
 }
 
-pub type RcManuscriptId = Rc<ManuscriptId>;
 pub type RcManuscript = Rc<Manuscript>;
 
-type ManuscriptDatabaseInner = HashMap<RcManuscriptId, RcManuscript>;
+type ManuscriptDatabaseInner = HashMap<ManuscriptId, RcManuscript>;
 
 /// The database of manuscript.
 ///
 /// It contains a [`HashMap`] to store the mapping of
-/// [`RcManuscriptId`] to [`RcManuscript`], and a [`Vec`] to store
+/// [`ManuscriptId`] to [`RcManuscript`], and a [`Vec`] to store
 /// the order of the manuscripts.
 ///
 /// Note that it is immutable and should not be changed.
 pub struct ManuscriptDatabase {
-    order: Vec<RcManuscriptId>,
+    order: Vec<ManuscriptId>,
     db: ManuscriptDatabaseInner,
 }
 
@@ -110,12 +109,12 @@ pub struct ManuscriptDatabaseIter<'a> {
 
 impl ManuscriptDatabase {
     /// Get the first item ID in the database.
-    pub fn first(&self) -> Option<&RcManuscriptId> {
+    pub fn first(&self) -> Option<&ManuscriptId> {
         self.order.first()
     }
 
     /// Get the last item ID in the database.
-    pub fn last(&self) -> Option<&RcManuscriptId> {
+    pub fn last(&self) -> Option<&ManuscriptId> {
         self.order.last()
     }
 
@@ -123,9 +122,9 @@ impl ManuscriptDatabase {
     ///
     /// If no such item, return the first item.
     /// If nothing in the database, return `None`.
-    pub fn previous(&self, id: &ManuscriptId) -> Option<&RcManuscriptId> {
+    pub fn previous(&self, id: &ManuscriptId) -> Option<&ManuscriptId> {
         self.order
-            .split(|x| x.as_ref() == id)
+            .split(|x| x == id)
             .next()
             .and_then(|x| x.last())
             .or_else(|| self.first())
@@ -135,9 +134,9 @@ impl ManuscriptDatabase {
     ///
     /// If no such item, return the last item.
     /// If nothing in the database, return `None`.
-    pub fn next(&self, id: &ManuscriptId) -> Option<&RcManuscriptId> {
+    pub fn next(&self, id: &ManuscriptId) -> Option<&ManuscriptId> {
         self.order
-            .split(|x| x.as_ref() == id)
+            .split(|x| x == id)
             .nth(1)
             .and_then(|x| x.first())
             .or_else(|| self.last())
@@ -163,8 +162,8 @@ impl From<Vec<Rc<Manuscript>>> for ManuscriptDatabase {
         let mut order = Vec::with_capacity(v.len());
 
         for m in v {
-            let id = Rc::new(ManuscriptId::hash(&m));
-            db.insert(id.clone(), m);
+            let id = ManuscriptId::hash(&m);
+            db.insert(id, m);
             order.push(id);
         }
 
@@ -178,8 +177,8 @@ impl From<Vec<Manuscript>> for ManuscriptDatabase {
         let mut order = Vec::with_capacity(v.len());
 
         for m in v {
-            let id = Rc::new(ManuscriptId::hash(&m));
-            db.insert(id.clone(), Rc::new(m));
+            let id = ManuscriptId::hash(&m);
+            db.insert(id, Rc::new(m));
             order.push(id);
         }
 
@@ -188,7 +187,7 @@ impl From<Vec<Manuscript>> for ManuscriptDatabase {
 }
 
 impl<'a> Iterator for ManuscriptDatabaseIter<'a> {
-    type Item = (&'a RcManuscriptId, &'a RcManuscript);
+    type Item = (&'a ManuscriptId, &'a RcManuscript);
 
     fn next(&mut self) -> Option<Self::Item> {
         let id = self.db.order.get(self.idx)?;

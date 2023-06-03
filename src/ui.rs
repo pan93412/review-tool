@@ -5,52 +5,95 @@
 mod components;
 mod fonts;
 
-use std::collections::{hash_map::Entry, HashMap};
+use std::collections::hash_map::Entry;
 
 use eframe::egui;
+use serde::{de::DeserializeOwned, Serialize};
 
-use crate::types::{ManuscriptDatabase, RcManuscript, RcManuscriptId};
+use crate::types::{
+    rank::{GroupMetaDatabase, MetaGroup},
+    ManuscriptDatabase, ManuscriptId, RcManuscript,
+};
 
-use self::{components::rank::Rank, fonts::create_font_def};
+use self::{components::rank::AppRankExtension, fonts::create_font_def};
 
-pub struct ReviewToolApp {
+/// The Review Tool application.
+///
+/// RG means a RankGroup such as [`crate::types::rank::sitcon_gdsc::Group`].
+pub struct ReviewToolApp<M: MetaGroup> {
     manuscripts: ManuscriptDatabase,
-    rank: HashMap<RcManuscriptId, Rank>,
+    rank_groups: GroupMetaDatabase<M>,
 
-    current_selected: RcManuscriptId,
+    current_selected: ManuscriptId,
 }
 
-impl ReviewToolApp {
+impl<M: MetaGroup + DeserializeOwned> ReviewToolApp<M> {
     pub fn new(
         cc: &eframe::CreationContext<'_>,
         manuscripts: ManuscriptDatabase,
     ) -> Result<Self, Error> {
-        let first_manuscript = manuscripts.first().ok_or(Error::NoManuscript)?.clone();
+        let first_manuscript = *manuscripts.first().ok_or(Error::NoManuscript)?;
+        let rank = match cc.storage {
+            Some(storage) => {
+                let serialized_rank = storage.get_string("rank");
+
+                if let Some(serialized_rank) = serialized_rank {
+                    match serde_yaml::from_str::<'_, GroupMetaDatabase<M>>(&serialized_rank) {
+                        Ok(rank) => Some(rank),
+                        Err(e) => {
+                            tracing::warn!("failed to deserialize rank: {}", e);
+                            None
+                        }
+                    }
+                } else {
+                    None
+                }
+            }
+            None => None,
+        }
+        .unwrap_or(GroupMetaDatabase::with_capacity(manuscripts.len()));
 
         cc.egui_ctx.set_fonts(create_font_def());
 
         Ok(Self {
-            rank: HashMap::with_capacity(manuscripts.len()),
+            rank_groups: rank,
             manuscripts,
             current_selected: first_manuscript,
         })
     }
+}
 
+impl<M: MetaGroup> ReviewToolApp<M> {
     pub(crate) fn get_current_manuscript(&self) -> &RcManuscript {
         self.manuscripts
             .get(&self.current_selected)
             .unwrap_or_else(|| self.manuscripts.values().next().expect("must have one"))
     }
+}
 
-    pub(crate) fn get_current_rank_or_set_default(&mut self) -> &mut Rank {
-        match self.rank.entry(self.current_selected.clone()) {
+impl<M: MetaGroup + Default> ReviewToolApp<M> {
+    pub(crate) fn get_current_rank_or_set_default(&mut self) -> &mut M {
+        match self.rank_groups.entry(self.current_selected) {
             Entry::Occupied(entry) => entry.into_mut(),
-            Entry::Vacant(entry) => entry.insert(Rank::default()),
+            Entry::Vacant(entry) => entry.insert(M::default()),
         }
     }
 }
 
-impl eframe::App for ReviewToolApp {
+impl<M: MetaGroup + Serialize> eframe::App for ReviewToolApp<M> {
+    fn save(&mut self, storage: &mut dyn eframe::Storage) {
+        let serialized_rank = serde_yaml::to_string(&self.rank_groups);
+
+        match serialized_rank {
+            Ok(serialized_rank) => {
+                storage.set_string("rank", serialized_rank);
+            }
+            Err(e) => {
+                tracing::error!("failed to serialize rank: {e}");
+            }
+        }
+    }
+
     fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("Review tool");

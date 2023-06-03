@@ -1,6 +1,13 @@
 //! The structure related to a rank.
 
+use std::{
+    collections::HashMap,
+    ops::{Deref, DerefMut},
+};
+
 use serde::{Deserialize, Serialize};
+
+use super::ManuscriptId;
 
 pub mod sitcon_gdsc;
 
@@ -38,6 +45,39 @@ pub trait ItemGroup {
 
     /// The description of the score.
     fn score_description(&self) -> Option<String>;
+}
+
+/// A group of [`ItemGroup`] – we called it *meta*.
+pub trait MetaGroup {}
+
+// No meta group.
+impl MetaGroup for () {}
+
+/// The database of manuscript id to meta group.
+///
+/// It contains a [`HashMap`] to store the mapping of
+/// [`ManuscriptId`] to `T`.
+#[derive(Serialize, Deserialize, Default)]
+pub struct GroupMetaDatabase<M: MetaGroup>(HashMap<ManuscriptId, M>);
+
+impl<M: MetaGroup> GroupMetaDatabase<M> {
+    pub fn with_capacity(cap: usize) -> Self {
+        Self(HashMap::with_capacity(cap))
+    }
+}
+
+impl<M: MetaGroup> Deref for GroupMetaDatabase<M> {
+    type Target = HashMap<ManuscriptId, M>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<M: MetaGroup> DerefMut for GroupMetaDatabase<M> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
 }
 
 /// The standard choice for ranking.

@@ -2,9 +2,9 @@
 
 use egui::{RichText, TextEdit};
 
-use crate::ui::ReviewToolApp;
+use crate::{types::rank::MetaGroup, ui::ReviewToolApp};
 
-impl ReviewToolApp {
+impl<M: MetaGroup> ReviewToolApp<M> {
     pub(crate) fn manuscript(&mut self, ui: &mut eframe::egui::Ui) {
         let selected = self.get_current_manuscript();
 
