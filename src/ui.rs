@@ -65,7 +65,7 @@ impl ReviewToolApp {
 
         ui.separator();
 
-        egui::Grid::new("abstract-of-manuscript")
+        egui::Grid::new("manuscript-details")
             .num_columns(2)
             .min_col_width(ui.available_width() / 2.0)
             .show(ui, |ui| {
