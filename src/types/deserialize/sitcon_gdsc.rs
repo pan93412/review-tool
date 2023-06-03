@@ -40,7 +40,7 @@ impl From<SitconGdscFormat> for types::Manuscript {
             author: Author {
                 name: src.name,
                 description: src.self_introduction,
-            }
+            },
         }
     }
 }
@@ -71,29 +71,11 @@ mod tests {
 
     use crate::types::{Author, Difficulty, Manuscript};
 
-
     #[test]
     fn test_difficulty_into() {
         let raw = [
-            "中階",
-            "中階",
-            "入門",
-            "入門",
-            "入門",
-            "中階",
-            "入門",
-            "入門",
-            "入門",
-            "Beginner",
-            "入門",
-            "入門",
-            "入門",
-            "入門",
-            "中階",
-            "入門",
-            "入門",
-            "入門",
-            "中階",
+            "中階", "中階", "入門", "入門", "入門", "中階", "入門", "入門", "入門", "Beginner",
+            "入門", "入門", "入門", "入門", "中階", "入門", "入門", "入門", "中階",
         ];
 
         let expected = [
@@ -190,7 +172,8 @@ mod tests {
         ];
 
         let reader = Cursor::new(input.as_bytes());
-        let deserialized_result = super::super::deserialize_internal::<super::SitconGdscFormat>(reader);
+        let deserialized_result =
+            super::super::deserialize_internal::<super::SitconGdscFormat>(reader);
         let deserialized_result = deserialized_result.unwrap();
 
         assert_eq!(deserialized_result, expected);

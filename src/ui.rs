@@ -5,13 +5,16 @@
 mod components;
 mod fonts;
 
-use std::{rc::Rc, collections::{HashMap, hash_map::Entry}};
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    rc::Rc,
+};
 
 use eframe::egui;
 
 use crate::types;
 
-use self::{fonts::create_font_def, components::rank::Rank};
+use self::{components::rank::Rank, fonts::create_font_def};
 
 pub struct ReviewToolApp {
     manuscripts: Vec<Rc<types::Manuscript>>,
@@ -21,9 +24,12 @@ pub struct ReviewToolApp {
 }
 
 impl ReviewToolApp {
-    pub fn new(cc: &eframe::CreationContext<'_>, manuscripts: Vec<Rc<types::Manuscript>>) -> Result<Self, Error> {
+    pub fn new(
+        cc: &eframe::CreationContext<'_>,
+        manuscripts: Vec<Rc<types::Manuscript>>,
+    ) -> Result<Self, Error> {
         if manuscripts.is_empty() {
-            return Err(Error::NoManuscript)
+            return Err(Error::NoManuscript);
         }
 
         cc.egui_ctx.set_fonts(create_font_def());
@@ -35,8 +41,7 @@ impl ReviewToolApp {
     }
 
     pub(crate) fn get_current_manuscript(&self) -> &Rc<types::Manuscript> {
-        self
-            .manuscripts
+        self.manuscripts
             .get(self.current_selected)
             .unwrap_or_else(|| &self.manuscripts[0])
     }
@@ -78,17 +83,20 @@ impl eframe::App for ReviewToolApp {
                     ui.vertical(|ui| {
                         ui.push_id("manuscript-info", |ui| {
                             // leave space for rank-area and separator
-                            egui::ScrollArea::vertical().max_height(ui.available_height() / 2.0 - 1.0).show(ui, |ui| {
-                                self.manuscript(ui);
-                            });
+                            egui::ScrollArea::vertical()
+                                .max_height(ui.available_height() / 2.0 - 1.0)
+                                .show(ui, |ui| {
+                                    self.manuscript(ui);
+                                });
                         });
                         ui.separator();
                         ui.push_id("rank-area", |ui| {
-                            egui::ScrollArea::vertical().max_height(ui.available_height()).show(ui, |ui| {
-                                self.rank(ui);
-                            });
+                            egui::ScrollArea::vertical()
+                                .max_height(ui.available_height())
+                                .show(ui, |ui| {
+                                    self.rank(ui);
+                                });
                         });
-
                     });
 
                     ui.end_row();

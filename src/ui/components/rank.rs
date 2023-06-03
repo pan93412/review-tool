@@ -1,8 +1,11 @@
 use std::ops::{Deref, DerefMut};
 
-use egui::{Widget, DragValue};
+use egui::{DragValue, Widget};
 
-use crate::{ui::ReviewToolApp, types::rank::{Item, StandardChoice, sitcon_gdsc, ItemGroup}};
+use crate::{
+    types::rank::{sitcon_gdsc, Item, ItemGroup, StandardChoice},
+    ui::ReviewToolApp,
+};
 
 #[derive(Default)]
 pub struct Rank {
@@ -32,7 +35,11 @@ impl ReviewToolApp {
     }
 }
 
-fn render_item_group<G: ItemGroup>(group: &mut G, ui: &mut eframe::egui::Ui, add_choice_widget: impl FnOnce(&mut eframe::egui::Ui, &mut G)) {
+fn render_item_group<G: ItemGroup>(
+    group: &mut G,
+    ui: &mut eframe::egui::Ui,
+    add_choice_widget: impl FnOnce(&mut eframe::egui::Ui, &mut G),
+) {
     ui.heading(group.name());
     group.description().map(|d| ui.label(d));
 
@@ -87,7 +94,14 @@ impl<'a, I: Item> Widget for &mut ChoiceWidget<'a, I> {
         egui::ComboBox::from_label(self.0.name())
             .selected_text(self.0.choice().as_ref())
             .show_ui(ui, |ui| {
-                for choice in [StandardChoice::Full, StandardChoice::Partial, StandardChoice::Maybe, StandardChoice::No].iter() {
+                for choice in [
+                    StandardChoice::Full,
+                    StandardChoice::Partial,
+                    StandardChoice::Maybe,
+                    StandardChoice::No,
+                ]
+                .iter()
+                {
                     ui.selectable_value(self.0.choice_mut(), *choice, choice.as_ref());
                 }
             })

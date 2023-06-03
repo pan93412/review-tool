@@ -14,12 +14,15 @@ pub enum Format {
     SitconGdsc,
 }
 
-fn deserialize_internal<D: DeserializeOwned + Into<Manuscript>>(reader: impl Read) -> Result<Vec<Manuscript>, csv::Error>  {
+fn deserialize_internal<D: DeserializeOwned + Into<Manuscript>>(
+    reader: impl Read,
+) -> Result<Vec<Manuscript>, csv::Error> {
     let mut reader = csv::Reader::from_reader(reader);
 
-    reader.deserialize::<D>().map(|item| {
-        item.map(|item| item.into())
-    }).collect()
+    reader
+        .deserialize::<D>()
+        .map(|item| item.map(|item| item.into()))
+        .collect()
 }
 
 pub fn deserialize(format: Format, reader: impl Read) -> Result<Vec<Manuscript>, csv::Error> {

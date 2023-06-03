@@ -19,9 +19,7 @@ fn main() {
     eframe::run_native(
         "Review Tool",
         options,
-        Box::new(|cc| {
-            Box::new(review_tool::ui::ReviewToolApp::new(cc, manuscripts).unwrap())
-        }),
+        Box::new(|cc| Box::new(review_tool::ui::ReviewToolApp::new(cc, manuscripts).unwrap())),
     )
     .expect("failed to start UI")
 }

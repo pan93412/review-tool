@@ -1,6 +1,6 @@
 //! Component: Manuscript List
 
-use egui::{Modifiers, Key};
+use egui::{Key, Modifiers};
 
 use crate::ui::ReviewToolApp;
 

@@ -1,6 +1,6 @@
 //! The structure related to a rank.
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 pub mod sitcon_gdsc;
 
