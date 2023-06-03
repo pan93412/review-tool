@@ -7,12 +7,7 @@ use crate::ui::ReviewToolApp;
 impl ReviewToolApp {
     pub(crate) fn manuscript_list(&mut self, ui: &mut eframe::egui::Ui) {
         for (i, manuscript) in self.manuscripts.iter().enumerate() {
-            let resp =
-                ui.selectable_value(&mut self.current_selected, i, manuscript.title.as_str());
-
-            if resp.clicked() {
-                self.current_selected = i;
-            }
+            ui.selectable_value(&mut self.current_selected, i, manuscript.title.as_str());
         }
 
         let final_item_idx = self.manuscripts.len() as isize - 1;
