@@ -1,11 +1,13 @@
 //! The eframe GUI of this review tool.
+//!
+//! Note that it is pretty dirty and need to be refactored.
 
 mod fonts;
 
 use std::rc::Rc;
 
 use eframe::egui;
-use egui::{Key, Layout, Modifiers, RichText, TextEdit};
+use egui::{Key, Modifiers, RichText, TextEdit};
 
 use crate::types;
 
@@ -140,8 +142,12 @@ impl eframe::App for ReviewToolApp {
 
                     ui.vertical(|ui| {
                         ui.push_id("manuscript-info", |ui| {
-                            egui::ScrollArea::vertical().show(ui, |ui| {
+                            egui::ScrollArea::vertical().max_height(ui.available_height() / 2.0 - 2.0).show(ui, |ui| {
                                 self.render_manuscript(ui);
+                            });
+                            ui.separator();
+                            ui.horizontal(|ui| {
+                                ui.label("這裡可以根據評分標準進行評分。我們會幫你計算出最終的分數。")
                             });
                         });
                     });
