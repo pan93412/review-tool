@@ -6,10 +6,7 @@ use crate::ui::ReviewToolApp;
 
 impl ReviewToolApp {
     pub(crate) fn manuscript(&mut self, ui: &mut eframe::egui::Ui) {
-        let selected = self
-            .manuscripts
-            .get(self.current_selected)
-            .unwrap_or_else(|| &self.manuscripts[0]);
+        let selected = self.get_current_manuscript();
 
         ui.heading(selected.title.as_str());
         ui.label(selected.type_.as_str());
