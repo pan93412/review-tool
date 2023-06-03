@@ -13,7 +13,7 @@ impl ReviewToolApp {
 
         ui.heading(selected.title.as_str());
         ui.label(selected.type_.as_str());
-        ui.label(selected.description.as_str());
+        ui.label(selected.abstract_.as_str());
 
         ui.separator();
 
@@ -22,8 +22,8 @@ impl ReviewToolApp {
             .min_col_width(ui.available_width() / 2.0)
             .show(ui, |ui| {
                 ui.vertical(|ui| {
-                    ui.heading("Abstract");
-                    ui.text_edit_multiline(&mut selected.abstract_.as_str());
+                    ui.heading("Description");
+                    ui.text_edit_multiline(&mut selected.description.as_str());
                 });
 
                 ui.vertical(|ui| {
