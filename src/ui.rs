@@ -5,7 +5,7 @@
 mod components;
 mod fonts;
 
-use std::rc::Rc;
+use std::{rc::Rc, collections::HashMap};
 
 use eframe::egui;
 
@@ -15,7 +15,7 @@ use self::{fonts::create_font_def, components::rank::Rank};
 
 pub struct ReviewToolApp {
     manuscripts: Vec<Rc<types::Manuscript>>,
-    rank: Rank,
+    rank: HashMap<Rc<types::Manuscript>, Rank>,
 
     current_selected: usize,
 }
@@ -25,7 +25,7 @@ impl ReviewToolApp {
         cc.egui_ctx.set_fonts(create_font_def());
         Self {
             manuscripts,
-            rank: Rank::default(),
+            rank: HashMap::default(),
             current_selected: 0,
         }
     }

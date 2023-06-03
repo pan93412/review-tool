@@ -41,7 +41,7 @@ pub trait ItemGroup {
 }
 
 /// The standard choice for ranking.
-#[derive(Default, PartialEq, Eq, Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Default, PartialEq, Eq, Copy, Clone, Debug, Serialize, Deserialize, Hash)]
 pub enum StandardChoice {
     /// 完全符合要求 (Full Match)
     #[default]

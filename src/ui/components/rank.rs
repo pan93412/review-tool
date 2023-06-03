@@ -22,7 +22,20 @@ impl Rank {
 
 impl ReviewToolApp {
     pub(crate) fn rank(&mut self, ui: &mut eframe::egui::Ui) {
-        self.rank.show(ui);
+        let selected = self
+            .manuscripts
+            .get(self.current_selected)
+            .unwrap_or_else(|| &self.manuscripts[0]);
+
+        let selected_rank = match self.rank.get_mut(selected) {
+            Some(entry) => entry,
+            None => {
+                self.rank.insert(selected.clone(), Rank::default());
+                self.rank.get_mut(selected).expect("must be inserted")
+            }
+        };
+
+        selected_rank.show(ui);
     }
 }
 

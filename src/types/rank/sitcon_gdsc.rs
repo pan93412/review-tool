@@ -11,7 +11,7 @@ pub mod subject {
     super::new_rank!(CodingRelated, "和程式相關", None);
     super::new_rank!(FLOSSRelated, "和開源相關", None);
 
-    #[derive(Default, Serialize, Deserialize)]
+    #[derive(Default, Serialize, Deserialize, Hash, Eq, PartialEq, Debug)]
     pub struct Group {
         pub student_related: StudentRelated,
         pub community_related: CommunityRelated,
@@ -78,7 +78,7 @@ pub struct Group {
 
 macro_rules! new_rank {
     ($name:ident, $display_name:expr, $description:expr) => {
-        #[derive(Default, ::serde::Serialize, ::serde::Deserialize)]
+        #[derive(Default, ::serde::Serialize, ::serde::Deserialize, Hash, Eq, PartialEq, Debug)]
         pub struct $name {
             comment: Option<String>,
             choice: crate::types::rank::StandardChoice,
