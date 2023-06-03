@@ -17,6 +17,12 @@ impl Rank {
             ui.add(&mut ChoiceWidget::new(&mut group.coding_related));
             ui.add(&mut ChoiceWidget::new(&mut group.floss_related));
         });
+
+        render_item_group(&mut self.group.expressive, ui, |ui, group| {
+            ui.add(&mut ChoiceWidget::new(&mut group.organized));
+            ui.add(&mut ChoiceWidget::new(&mut group.fluent));
+            ui.add(&mut ChoiceWidget::new(&mut group.completeness));
+        });
     }
 }
 
