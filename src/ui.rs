@@ -77,12 +77,18 @@ impl eframe::App for ReviewToolApp {
 
                     ui.vertical(|ui| {
                         ui.push_id("manuscript-info", |ui| {
-                            egui::ScrollArea::vertical().max_height(ui.available_height() / 2.0 - 2.0).show(ui, |ui| {
+                            // leave space for rank-area and separator
+                            egui::ScrollArea::vertical().max_height(ui.available_height() / 2.0 - 1.0).show(ui, |ui| {
                                 self.manuscript(ui);
                             });
-                            ui.separator();
-                            self.rank(ui);
                         });
+                        ui.separator();
+                        ui.push_id("rank-area", |ui| {
+                            egui::ScrollArea::vertical().max_height(ui.available_height()).show(ui, |ui| {
+                                self.rank(ui);
+                            });
+                        });
+
                     });
 
                     ui.end_row();
