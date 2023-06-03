@@ -1,5 +1,7 @@
 //! The structure related to a rank.
 
+use serde::{Serialize, Deserialize};
+
 pub mod sitcon_gdsc;
 
 /// A rank item.
@@ -33,7 +35,7 @@ pub trait ItemGroup {
 }
 
 /// The standard choice for ranking.
-#[derive(Default, PartialEq, Eq, Copy, Clone, Debug)]
+#[derive(Default, PartialEq, Eq, Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum StandardChoice {
     /// 完全符合要求 (Full Match)
     #[default]

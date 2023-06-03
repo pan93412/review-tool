@@ -2,6 +2,8 @@
 
 /// 主題相關：和學生、社群以及程式相關的議題，且與 FLOSS（自由/開放原始碼軟體）相關。
 pub mod subject {
+    use serde::{Serialize, Deserialize};
+
     use crate::types::rank::{ItemGroup, StandardChoice, Item};
 
     super::new_rank!(StudentRelated, "和學生相關", None);
@@ -9,7 +11,7 @@ pub mod subject {
     super::new_rank!(CodingRelated, "和程式相關", None);
     super::new_rank!(FLOSSRelated, "和開源相關", None);
 
-    #[derive(Default)]
+    #[derive(Default, Serialize, Deserialize)]
     pub struct Group {
         pub student_related: StudentRelated,
         pub community_related: CommunityRelated,
@@ -61,9 +63,14 @@ pub mod subject {
     }
 }
 
+#[derive(Default, Serialize, Deserialize)]
+pub struct Group {
+    pub subject: subject::Group,
+}
+
 macro_rules! new_rank {
     ($name:ident, $display_name:expr, $description:expr) => {
-        #[derive(Default)]
+        #[derive(Default, ::serde::Serialize, ::serde::Deserialize)]
         pub struct $name {
             comment: Option<String>,
             choice: crate::types::rank::StandardChoice,
@@ -97,3 +104,4 @@ macro_rules! new_rank {
     };
 }
 pub(self) use new_rank;
+use serde::{Serialize, Deserialize};

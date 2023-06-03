@@ -2,11 +2,11 @@ use std::ops::{Deref, DerefMut};
 
 use egui::{Widget, DragValue};
 
-use crate::{ui::ReviewToolApp, types::rank::{Item, StandardChoice, ItemGroup, sitcon_gdsc::subject}};
+use crate::{ui::ReviewToolApp, types::rank::{Item, StandardChoice, sitcon_gdsc, ItemGroup}};
 
 #[derive(Default)]
 pub struct Rank {
-    pub(crate) subject: subject::Group,
+    pub(crate) group: sitcon_gdsc::Group,
 }
 
 impl Rank {
@@ -20,20 +20,20 @@ impl Rank {
             .spacing([24.0, 12.0])
             .show(ui, |ui| {
                 ui.vertical(|ui| {
-                    ui.add(&mut ChoiceWidget::new(&mut self.subject.student_related));
-                    ui.add(&mut ChoiceWidget::new(&mut self.subject.community_related));
-                    ui.add(&mut ChoiceWidget::new(&mut self.subject.coding_related));
-                    ui.add(&mut ChoiceWidget::new(&mut self.subject.floss_related));
+                    ui.add(&mut ChoiceWidget::new(&mut self.group.subject.student_related));
+                    ui.add(&mut ChoiceWidget::new(&mut self.group.subject.community_related));
+                    ui.add(&mut ChoiceWidget::new(&mut self.group.subject.coding_related));
+                    ui.add(&mut ChoiceWidget::new(&mut self.group.subject.floss_related));
                 });
 
                 ui.vertical(|ui| {
                     ui.horizontal(|ui| {
                         ui.label("總分");
-                        ui.add(DragValue::new(&mut self.subject.score()));
+                        ui.add(DragValue::new(&mut self.group.subject.score()));
                     });
 
                     ui.label("分數描述");
-                    ui.text_edit_multiline(&mut self.subject.score_description().unwrap_or_default())
+                    ui.text_edit_multiline(&mut self.group.subject.score_description().unwrap_or_default())
                 });
                 ui.end_row();
             });
