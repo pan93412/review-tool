@@ -1,6 +1,7 @@
 //! Parse the content in CSV file.
 
 pub mod deserialize;
+pub mod rank;
 
 /// The difficulty of a manuscript.
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]

@@ -11,10 +11,11 @@ use eframe::egui;
 
 use crate::types;
 
-use self::fonts::create_font_def;
+use self::{fonts::create_font_def, components::rank::Rank};
 
 pub struct ReviewToolApp {
     manuscripts: Vec<Rc<types::Manuscript>>,
+    rank: Rank,
 
     current_selected: usize,
 }
@@ -24,6 +25,7 @@ impl ReviewToolApp {
         cc.egui_ctx.set_fonts(create_font_def());
         Self {
             manuscripts,
+            rank: Rank::default(),
             current_selected: 0,
         }
     }
@@ -59,9 +61,7 @@ impl eframe::App for ReviewToolApp {
                                 self.manuscript(ui);
                             });
                             ui.separator();
-                            ui.horizontal(|ui| {
-                                ui.label("這裡可以根據評分標準進行評分。我們會幫你計算出最終的分數。")
-                            });
+                            self.rank(ui);
                         });
                     });
 
