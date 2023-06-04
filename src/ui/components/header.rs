@@ -46,7 +46,11 @@ impl<M: MetaGroup> ReviewToolApp<M> {
             if let Some(s) = frame.storage_mut() {
                 self.save_btn(ui, s);
             }
-            if ui.button("Reset").clicked() {
+            if ui
+                .button("Reset")
+                .on_hover_text("Double click to reset")
+                .double_clicked()
+            {
                 // Clear the rank groups = Reset
                 self.rank_groups.clear();
                 self.state.reset();
