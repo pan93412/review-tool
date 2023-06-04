@@ -10,6 +10,7 @@ egui_extras = { git = "https://github.com/pan93412/egui.git", branch = "fix-obse
 eframe = { git = "https://github.com/pan93412/egui.git", branch = "fix-observer-removal-issue", features = [
     "default_fonts",
     "persistence",
+    "accesskit",
 ] }
 csv = "1.2.2"
 indoc = "2.0.1"
