@@ -1,6 +1,9 @@
 //! Component: Header
 
-use eframe::{App, Storage};
+use eframe::{
+    egui::{Key, Modifiers},
+    App, Storage,
+};
 use serde::Serialize;
 
 use crate::{
@@ -18,7 +21,9 @@ impl<M: MetaGroup> SaveExt for ReviewToolApp<M> {
 
 impl<M: MetaGroup + Serialize> SaveExt for ReviewToolApp<M> {
     fn save_btn(&mut self, ui: &mut eframe::egui::Ui, storage: &mut dyn Storage) {
-        if ui.button("Save").clicked() {
+        if ui.button("Save").clicked()
+            || ui.input_mut(|s| s.consume_key(Modifiers::COMMAND, Key::S))
+        {
             self.save(storage);
         }
     }
