@@ -82,6 +82,7 @@ impl RankExt for ReviewToolApp<sitcon_gdsc::Group> {
     fn rank(&mut self, ui: &mut eframe::egui::Ui) {
         let mut c = RankComponent(self.get_current_rank_or_set_default());
         c.show_reviewed_button(ui);
+        ui.separator();
         c.show(ui);
     }
 }
