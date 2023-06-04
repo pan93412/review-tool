@@ -11,6 +11,9 @@ const STATE_NOTHING: StateBit = 0b0;
 /// Saved state
 const STATE_SAVED: StateBit = 0b1;
 
+/// Reset (HashMap) state
+const STATE_RESET: StateBit = 0b10;
+
 /// The state strucuture.
 ///
 /// `N` is the available number of states.
@@ -81,6 +84,7 @@ macro_rules! register_state {
 
 register_state!(nothing, STATE_NOTHING);
 register_state!(saved, STATE_SAVED, 3);
+register_state!(reset, STATE_RESET, 3);
 
 impl State {
     /// Check all the states and reset the expired state.
