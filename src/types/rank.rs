@@ -47,6 +47,14 @@ pub trait ItemGroup {
     fn score_description(&self) -> Option<String>;
 }
 
+pub trait CommentableItemGroup: ItemGroup {
+    /// The group comment.
+    fn comment(&self) -> &str;
+
+    /// The mutable group comment.
+    fn comment_mut(&mut self) -> &mut String;
+}
+
 /// A group of [`ItemGroup`] – we called it *meta*.
 pub trait MetaGroup {
     /// Is all of the items in this meta group reviewed?

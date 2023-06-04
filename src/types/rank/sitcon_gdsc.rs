@@ -256,8 +256,22 @@ macro_rules! new_group {
             #[derive(Default, ::serde::Serialize, ::serde::Deserialize, Hash, Eq, PartialEq, Debug)]
             pub struct Group {
                 $(
-                    pub [< $entries:snake >]: $entries
-                ),+
+                    pub [< $entries:snake >]: $entries,
+                )+
+
+                comment: String,
+            }
+
+            impl crate::types::rank::CommentableItemGroup for Group {
+                /// The group comment.
+                fn comment(&self) -> &str {
+                    &self.comment
+                }
+
+                /// The mutable group comment.
+                fn comment_mut(&mut self) -> &mut String {
+                    &mut self.comment
+                }
             }
         }
     }
