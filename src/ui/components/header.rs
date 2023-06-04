@@ -20,7 +20,6 @@ impl<M: MetaGroup + Serialize> SaveExt for ReviewToolApp<M> {
     fn save_btn(&mut self, ui: &mut eframe::egui::Ui, storage: &mut dyn Storage) {
         if ui.button("Save").clicked() {
             self.save(storage);
-            self.state.saved();
         }
     }
 }

@@ -122,6 +122,7 @@ impl<M: MetaGroup + Serialize> eframe::App for ReviewToolApp<M> {
 
         storage.flush();
         tracing::info!("data has been stored");
+        self.state.saved();
     }
 }
 
