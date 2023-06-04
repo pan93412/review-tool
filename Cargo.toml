@@ -6,11 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-egui = { git = "https://github.com/pan93412/egui.git", branch = "fix-observer-removal-issue", features = [
-    "default_fonts",
-] }
 egui_extras = { git = "https://github.com/pan93412/egui.git", branch = "fix-observer-removal-issue" }
 eframe = { git = "https://github.com/pan93412/egui.git", branch = "fix-observer-removal-issue", features = [
+    "default_fonts",
     "persistence",
 ] }
 csv = "1.2.2"

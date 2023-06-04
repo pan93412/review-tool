@@ -2,6 +2,7 @@
 
 use std::{borrow::Cow, collections::hash_map::Entry};
 
+use eframe::egui;
 use egui::{Key, Modifiers};
 
 use crate::{types::rank::MetaGroup, ui::ReviewToolApp};

@@ -1,3 +1,4 @@
+use eframe::egui;
 use egui::{FontData, FontDefinitions};
 
 pub fn create_font_def() -> FontDefinitions {

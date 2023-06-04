@@ -1,5 +1,6 @@
 //! Component: Manuscript Info
 
+use eframe::egui;
 use egui::{RichText, TextEdit};
 
 use crate::{types::rank::MetaGroup, ui::ReviewToolApp};

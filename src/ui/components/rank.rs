@@ -1,5 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
+use eframe::egui;
 use egui::{Button, DragValue, Sense, TextEdit, Widget};
 
 use crate::{
