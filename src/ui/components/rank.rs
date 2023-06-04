@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use egui::{DragValue, Widget};
+use egui::{Button, DragValue, Sense, Widget};
 
 use crate::{
     types::rank::{sitcon_gdsc, Item, ItemGroup, MetaGroup, MutableMetaGroup, StandardChoice},
@@ -55,7 +55,7 @@ impl<M: MetaGroup> RankComponent<'_, M> {
 
 impl<M: MetaGroup> ReviewedExt for RankComponent<'_, M> {
     default fn show_reviewed_button(&mut self, ui: &mut eframe::egui::Ui) {
-        ui.button(self.reviewed_text())
+        ui.add(Button::new(self.reviewed_text()).sense(Sense::hover()))
             .on_hover_text("Unable to switch this state");
     }
 }
