@@ -39,7 +39,7 @@ macro_rules! register_state {
     ($state_name:ident, $state:expr, $dur_sec:expr) => {
         ::paste::paste! {
             impl State {
-                #[doc = concat!("Set the state to `", stringify!($state), "`.")]
+                #[doc = concat!("Set the state to `", stringify!($state_name), "`.")]
                 #[allow(unused)]
                 pub fn $state_name(&mut self) {
                     self.bit |= $state;
@@ -47,13 +47,13 @@ macro_rules! register_state {
                     register_state!(@timeout $state, $dur_sec, self);
                 }
 
-                #[doc = concat!("Is the state `", stringify!($state), "` (not considering expiration)?")]
+                #[doc = concat!("Is the state `", stringify!($state_name), "` (not considering expiration)?")]
                 #[allow(clippy::bad_bit_mask)]
                 pub const fn [< is_currently_ $state_name >](&self) -> bool {
                     self.bit & $state != 0
                 }
 
-                #[doc = concat!("Is the state `", stringify!($state), "`?")]
+                #[doc = concat!("Is the state `", stringify!($state_name), "`?")]
                 #[allow(unused)]
                 pub fn [< is_ $state_name >](&mut self) -> bool {
                     // Check the expiration and reset the state if it is expired.
