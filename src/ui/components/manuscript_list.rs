@@ -1,6 +1,6 @@
 //! Component: Manuscript List
 
-use std::borrow::Cow;
+use std::{borrow::Cow, collections::hash_map::Entry};
 
 use egui::{Key, Modifiers};
 
@@ -8,18 +8,20 @@ use crate::{types::rank::MetaGroup, ui::ReviewToolApp};
 
 impl<M: MetaGroup> ReviewToolApp<M> {
     pub(crate) fn manuscript_list(&mut self, ui: &mut eframe::egui::Ui) {
-        for (i, manuscript) in self.manuscripts.iter() {
-            // add a checked mark if the manuscript has been ranked
-            let ranked = self.rank_groups.contains_key(i);
+        for (id, manuscript) in self.manuscripts.iter() {
+            let reviewed = match self.rank_groups.entry(*id) {
+                Entry::Occupied(entry) => entry.get().reviewed(),
+                Entry::Vacant(_) => false,
+            };
 
             // the title string
-            let title = if ranked {
+            let title = if reviewed {
                 Cow::Owned(format!("✔ {}", manuscript.title))
             } else {
                 Cow::Borrowed(manuscript.title.as_str())
             };
 
-            ui.selectable_value(&mut self.current_selected, *i, title);
+            ui.selectable_value(&mut self.current_selected, *id, title);
         }
 
         // ↓ key to select next item
