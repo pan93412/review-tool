@@ -60,6 +60,14 @@ impl MetaGroup for () {}
 #[derive(Serialize, Deserialize, Default)]
 pub struct GroupMetaDatabase<M: MetaGroup>(HashMap<ManuscriptId, M>);
 
+impl<M: MetaGroup + std::fmt::Debug> std::fmt::Debug for GroupMetaDatabase<M> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("GroupMetaDatabase")
+            .field("0", &self.0)
+            .finish()
+    }
+}
+
 impl<M: MetaGroup> GroupMetaDatabase<M> {
     pub fn with_capacity(cap: usize) -> Self {
         Self(HashMap::with_capacity(cap))
