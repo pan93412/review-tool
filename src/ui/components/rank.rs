@@ -31,19 +31,19 @@ impl<'a> RankComponent<'a, sitcon_gdsc::Group> {
             ui.add(&mut ChoiceWidget::new(&mut group.floss_related));
         });
 
-        render_item_group_with_comment(&mut self.0.expressive, ui, |ui, group| {
-            ui.add(&mut ChoiceWidget::new(&mut group.organized));
-            ui.add(&mut ChoiceWidget::new(&mut group.fluent));
-            ui.add(&mut ChoiceWidget::new(&mut group.completeness));
-        });
-
         render_item_group_with_comment(&mut self.0.content, ui, |ui, group| {
             ui.add(&mut ChoiceWidget::new(&mut group.knowledges));
             ui.add(&mut ChoiceWidget::new(&mut group.experiences));
             ui.add(&mut ChoiceWidget::new(&mut group.uniqueness));
             ui.add(&mut ChoiceWidget::new(&mut group.structure));
             ui.add(&mut ChoiceWidget::new(&mut group.completeness));
-        })
+        });
+
+        render_item_group_with_comment(&mut self.0.expressive, ui, |ui, group| {
+            ui.add(&mut ChoiceWidget::new(&mut group.organized));
+            ui.add(&mut ChoiceWidget::new(&mut group.fluent));
+            ui.add(&mut ChoiceWidget::new(&mut group.completeness));
+        });
     }
 }
 
