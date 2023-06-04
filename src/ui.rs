@@ -29,7 +29,7 @@ pub struct ReviewToolApp<M: MetaGroup> {
     state: state::State,
 }
 
-impl<M: MetaGroup + DeserializeOwned> ReviewToolApp<M> {
+impl<M: MetaGroup> ReviewToolApp<M> {
     pub fn new(
         cc: &eframe::CreationContext<'_>,
         manuscripts: ManuscriptDatabase,
@@ -46,7 +46,25 @@ impl<M: MetaGroup + DeserializeOwned> ReviewToolApp<M> {
             state: state::State::default(),
         })
     }
+}
 
+trait RetrieveRankExt<M: MetaGroup> {
+    fn retrieve_rank(
+        cc: &eframe::CreationContext<'_>,
+        manuscripts: &ManuscriptDatabase,
+    ) -> GroupMetaDatabase<M>;
+}
+
+impl<M: MetaGroup> RetrieveRankExt<M> for ReviewToolApp<M> {
+    default fn retrieve_rank(
+        _cc: &eframe::CreationContext<'_>,
+        _manuscripts: &ManuscriptDatabase,
+    ) -> GroupMetaDatabase<M> {
+        GroupMetaDatabase::with_capacity(0)
+    }
+}
+
+impl<M: MetaGroup + DeserializeOwned> RetrieveRankExt<M> for ReviewToolApp<M> {
     fn retrieve_rank(
         cc: &eframe::CreationContext<'_>,
         manuscripts: &ManuscriptDatabase,
