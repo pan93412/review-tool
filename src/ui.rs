@@ -92,6 +92,9 @@ impl<M: MetaGroup + Serialize> eframe::App for ReviewToolApp<M> {
                 tracing::error!("failed to serialize rank: {e}");
             }
         }
+
+        storage.flush();
+        tracing::info!("data has been stored");
     }
 
     fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
