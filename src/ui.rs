@@ -18,6 +18,8 @@ use crate::types::{
 
 use self::{components::rank::AppRankExtension, fonts::create_font_def};
 
+const RANK_KEY: &str = "rank";
+
 /// The Review Tool application.
 ///
 /// RG means a RankGroup such as [`crate::types::rank::sitcon_gdsc::Group`].
@@ -70,7 +72,7 @@ impl<M: MetaGroup + DeserializeOwned> RetrieveRankExt<M> for ReviewToolApp<M> {
         manuscripts: &ManuscriptDatabase,
     ) -> GroupMetaDatabase<M> {
         cc.storage
-            .and_then(|storage| storage.get_string("rank"))
+            .and_then(|storage| storage.get_string(RANK_KEY))
             .and_then(|r| {
                 serde_yaml::from_str::<'_, GroupMetaDatabase<M>>(&r).map_or_else(
                     |e| {
@@ -107,7 +109,7 @@ impl<M: MetaGroup + Serialize> eframe::App for ReviewToolApp<M> {
 
         match serialized_rank {
             Ok(serialized_rank) => {
-                storage.set_string("rank", serialized_rank);
+                storage.set_string(RANK_KEY, serialized_rank);
             }
             Err(e) => {
                 tracing::error!("failed to serialize rank: {e}");
