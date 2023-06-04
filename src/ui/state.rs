@@ -105,12 +105,25 @@ impl State {
 
 impl State {
     /// Get the human-readable text (not considering expiration).
-    const fn get_currently_human_text(&self) -> &str {
-        match self.bit {
-            STATE_NOTHING => "",
-            STATE_SAVED => "Saved!",
-            _ => "Undefined state :(",
+    fn get_currently_human_text(&self) -> &str {
+        const STRING_TABLE: &[(StateBit, &str)] = &[
+            (
+                STATE_SAVED & STATE_RESET,
+                "The rank has been saved & reset!",
+            ),
+            (STATE_SAVED, "The rank has been saved!"),
+            (STATE_RESET, "The rank has been reset!"),
+            (STATE_NOTHING, ""),
+        ];
+
+        for (state, text) in STRING_TABLE.iter() {
+            let state = *state;
+            if self.bit & state == state {
+                return text;
+            }
         }
+
+        "Undefined state"
     }
 
     /// Get the human-readable text.
