@@ -3,7 +3,10 @@
 use eframe::{App, Storage};
 use serde::Serialize;
 
-use crate::{types::rank::MetaGroup, ui::ReviewToolApp};
+use crate::{
+    types::rank::MetaGroup,
+    ui::{ReviewToolApp, RANK_KEY},
+};
 
 trait SaveExt {
     fn save_btn(&mut self, ui: &mut eframe::egui::Ui, storage: &mut dyn Storage);
@@ -34,6 +37,12 @@ impl<M: MetaGroup> ReviewToolApp<M> {
             });
 
             ui.separator();
+            if let Some(s) = frame.storage_mut() {
+                if ui.button("Dump").clicked() {
+                    tracing::info!("Result: {}", s.get_string(RANK_KEY).unwrap_or_default());
+                    self.state.dump();
+                }
+            }
             if let Some(s) = frame.storage_mut() {
                 self.save_btn(ui, s);
             }
