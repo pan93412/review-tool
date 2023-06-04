@@ -105,14 +105,18 @@ impl<M: MetaGroup + Default> ReviewToolApp<M> {
 
 impl<M: MetaGroup + Serialize> eframe::App for ReviewToolApp<M> {
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
-        let serialized_rank = serde_yaml::to_string(&self.rank_groups);
+        if self.rank_groups.is_empty() {
+            storage.set_string(RANK_KEY, String::new());
+        } else {
+            let serialized_rank = serde_yaml::to_string(&self.rank_groups);
 
-        match serialized_rank {
-            Ok(serialized_rank) => {
-                storage.set_string(RANK_KEY, serialized_rank);
-            }
-            Err(e) => {
-                tracing::error!("failed to serialize rank: {e}");
+            match serialized_rank {
+                Ok(serialized_rank) => {
+                    storage.set_string(RANK_KEY, serialized_rank);
+                }
+                Err(e) => {
+                    tracing::error!("failed to serialize rank: {e}");
+                }
             }
         }
 
