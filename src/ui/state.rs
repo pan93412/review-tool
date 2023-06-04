@@ -108,7 +108,7 @@ impl State {
     fn get_currently_human_text(&self) -> &str {
         const STRING_TABLE: &[(StateBit, &str)] = &[
             (
-                STATE_SAVED & STATE_RESET,
+                STATE_SAVED | STATE_RESET,
                 "The rank has been saved & reset!",
             ),
             (STATE_SAVED, "The rank has been saved!"),
