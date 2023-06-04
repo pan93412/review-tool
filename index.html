@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <!-- Disable zooming -->
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no"
+  />
+
+  <head>
+    <title>Review Tool</title>
+
+    <link data-trunk rel="rust" data-wasm-opt="4" />
+    <link data-trunk rel="copy-file" href="manuscripts.csv" />
+    <base data-trunk-public-url />
+
+    <!-- <link rel="stylesheet" href="assets/style.css" /> -->
+
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="white"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#404040"
+    />
+  </head>
+
+  <body>
+    <!-- The WASM code will resize the canvas dynamically -->
+    <!-- the id is hardcoded in main.rs . so, make sure both match. -->
+    <canvas id="review-tool"></canvas>
+  </body>
+</html>
+
+<!-- Powered by egui: https://github.com/emilk/egui/ -->

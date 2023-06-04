@@ -17,11 +17,16 @@ pub enum Format {
 fn deserialize_internal<D: DeserializeOwned + Into<Manuscript>>(
     reader: impl Read,
 ) -> Result<Vec<Manuscript>, csv::Error> {
+    tracing::debug!("Constructing CSV reader…");
     let mut reader = csv::Reader::from_reader(reader);
 
+    tracing::debug!("Deserializing with CSV…");
     reader
         .deserialize::<D>()
-        .map(|item| item.map(|item| item.into()))
+        .map(|item| {
+            tracing::debug!("Deserialized. Converting data…");
+            item.map(|item| item.into())
+        })
         .collect()
 }
 

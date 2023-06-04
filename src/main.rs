@@ -1,9 +1,10 @@
-use review_tool::types::{
-    deserialize::{deserialize, Format},
-    rank::sitcon_gdsc,
-};
-
+#[cfg(not(target_family = "wasm"))]
 fn main() {
+    use review_tool::types::{
+        deserialize::{deserialize, Format},
+        rank::sitcon_gdsc,
+    };
+
     tracing_subscriber::fmt::init();
 
     // Reading manuscripts
@@ -28,4 +29,15 @@ fn main() {
         }),
     )
     .expect("failed to start UI");
+}
+
+#[cfg(target_family = "wasm")]
+mod wasm;
+
+#[cfg(target_family = "wasm")]
+fn main() {
+    tracing_wasm::set_as_global_default();
+
+
+    wasm_bindgen_futures::spawn_local(async move { wasm::run().await.expect("start UI") });
 }
