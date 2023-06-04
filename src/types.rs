@@ -3,6 +3,7 @@
 use std::{collections::HashMap, ops::Deref, rc::Rc};
 
 use serde::{Deserialize, Serialize};
+use serde_with::serde_as;
 
 pub mod deserialize;
 pub mod rank;
@@ -70,8 +71,9 @@ pub struct Manuscript {
 }
 
 /// The SHA-256 ID of the manuscript.
+#[serde_with::serde_as]
 #[derive(Serialize, Deserialize, Hash, PartialEq, Eq, Debug, Clone, Copy)]
-pub struct ManuscriptId(pub [u8; 32]);
+pub struct ManuscriptId(#[serde_as(as = "::serde_with::hex::Hex")] pub [u8; 32]);
 
 impl ManuscriptId {
     pub fn hash(m: &Manuscript) -> Self {
