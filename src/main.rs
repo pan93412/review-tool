@@ -14,7 +14,10 @@ fn main() {
     }
     .into();
 
-    let options = eframe::NativeOptions::default();
+    let options = eframe::NativeOptions {
+        app_id: Some("review-tool".to_owned()),
+        ..Default::default()
+    };
     eframe::run_native(
         "Review Tool",
         options,
