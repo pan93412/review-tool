@@ -4,6 +4,7 @@
 
 mod components;
 mod fonts;
+mod state;
 
 use std::collections::hash_map::Entry;
 
@@ -25,6 +26,7 @@ pub struct ReviewToolApp<M: MetaGroup> {
     rank_groups: GroupMetaDatabase<M>,
 
     current_selected: ManuscriptId,
+    state: state::State,
 }
 
 impl<M: MetaGroup + DeserializeOwned> ReviewToolApp<M> {
@@ -41,6 +43,7 @@ impl<M: MetaGroup + DeserializeOwned> ReviewToolApp<M> {
             rank_groups: rank,
             manuscripts,
             current_selected: first_manuscript,
+            state: state::State::default(),
         })
     }
 
@@ -96,14 +99,14 @@ impl<M: MetaGroup + Serialize> eframe::App for ReviewToolApp<M> {
         storage.flush();
         tracing::info!("data has been stored");
     }
+}
 
-    fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
+impl<M: MetaGroup> eframe::App for ReviewToolApp<M> {
+    default fn save(&mut self, _storage: &mut dyn eframe::Storage) {}
+
+    fn update(&mut self, ctx: &eframe::egui::Context, frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("Review tool");
-            ui.horizontal_top(|ui| {
-                ui.label("Current manuscripts:");
-                ui.label(self.manuscripts.len().to_string());
-            });
+            self.header(ui, frame);
 
             ui.separator();
 
