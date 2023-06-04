@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use egui::{Button, DragValue, Sense, Widget};
+use egui::{Button, DragValue, Sense, TextEdit, Widget};
 
 use crate::{
     types::rank::{
@@ -97,7 +97,7 @@ fn render_item_group_with_comment<G: CommentableItemGroup>(
 ) {
     render_item_group_advanced(group, ui, add_choice_widget, |ui, group| {
         ui.label("評論");
-        ui.text_edit_multiline(group.comment_mut());
+        ui.add(TextEdit::multiline(group.comment_mut()).desired_rows(1));
     })
 }
 
