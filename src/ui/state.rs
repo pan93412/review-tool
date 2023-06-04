@@ -14,6 +14,9 @@ const STATE_SAVED: StateBit = 0b1;
 /// Reset (HashMap) state
 const STATE_RESET: StateBit = 0b10;
 
+// Dump state
+const STATE_DUMP: StateBit = 0b100;
+
 /// The state strucuture.
 ///
 /// `N` is the available number of states.
@@ -85,6 +88,7 @@ macro_rules! register_state {
 register_state!(nothing, STATE_NOTHING);
 register_state!(saved, STATE_SAVED, 3);
 register_state!(reset, STATE_RESET, 3);
+register_state!(dump, STATE_DUMP, 5);
 
 impl State {
     /// Check all the states and reset the expired state.
@@ -108,9 +112,23 @@ impl State {
     fn get_currently_human_text(&self) -> &str {
         const STRING_TABLE: &[(StateBit, &str)] = &[
             (
+                STATE_SAVED | STATE_DUMP | STATE_RESET,
+                "Dumped the reset state! See console.",
+            ),
+            (
+                // Reset but not saved, dump the previous state.
+                STATE_RESET | STATE_DUMP,
+                "Dumped the previous state! See console.",
+            ),
+            (
+                STATE_SAVED | STATE_DUMP,
+                "Dumped the saved state! See console.",
+            ),
+            (
                 STATE_SAVED | STATE_RESET,
                 "The rank has been saved & reset!",
             ),
+            (STATE_DUMP, "The rank has been dumped! See console."),
             (STATE_SAVED, "The rank has been saved!"),
             (STATE_RESET, "The rank has been reset!"),
             (STATE_NOTHING, ""),
