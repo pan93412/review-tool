@@ -120,10 +120,81 @@ pub mod expressive {
     }
 }
 
+/// 稿件內容：知識分享、經驗案例、想法觀點是否獨特等。另外也包括稿件的結構及資料完整性是否充足。
+pub mod content {
+    use crate::types::rank::{Item, ItemGroup, StandardChoice};
+
+    super::new_rank!(Knowledges, "知識分享", None);
+    super::new_rank!(Experiences, "經驗案例", None);
+    super::new_rank!(Uniqueness, "想法獨特", None);
+    super::new_rank!(Structure, "結構完整", None);
+    super::new_rank!(Completeness, "資料充足", None);
+
+    super::new_group!(Knowledges, Experiences, Uniqueness, Structure, Completeness);
+
+    impl ItemGroup for Group {
+        fn name(&self) -> &str {
+            "稿件內容"
+        }
+
+        fn description(&self) -> Option<&str> {
+            Some("知識分享、經驗案例、想法觀點是否獨特等。另外也包括稿件的結構及資料完整性是否充足。")
+        }
+
+        fn score(&self) -> f64 {
+            // 知識、經驗、獨特性 3 選 2 5%，三者都有 7%
+
+            let direction_score = [
+                self.knowledges.choice(),
+                self.experiences.choice(),
+                self.uniqueness.choice(),
+            ]
+            .into_iter()
+            .map(|c| match c {
+                StandardChoice::Full => 2.5,
+                StandardChoice::Partial => 2.0,
+                StandardChoice::Maybe => 1.0,
+                StandardChoice::No => 0.0,
+            })
+            .sum::<f64>()
+            .round()
+            .min(7.0);
+
+            // 結構佔 2%
+            let structure_score = match self.structure.choice() {
+                StandardChoice::Full => 2.0,
+                StandardChoice::Partial => 1.0,
+                StandardChoice::Maybe => 0.5,
+                StandardChoice::No => 0.0,
+            };
+
+            // 資料如果非常充足且受到評審喜歡，可以多給 1%
+            let completeness_score = match self.completeness.choice() {
+                StandardChoice::Full => 1.0,
+                _ => 0.0,
+            };
+
+            direction_score + structure_score + completeness_score
+        }
+
+        fn score_description(&self) -> Option<String> {
+            Some(format!(
+                "知識分享 {know}、經驗案例 {exp}、想法觀點是否獨特 {uniq} 等。另外也包括稿件的結構 {stru} 及資料完整性是否充足 {com}。",
+                know = self.knowledges.choice.as_emoji(),
+                exp = self.experiences.choice.as_emoji(),
+                uniq = self.uniqueness.choice.as_emoji(),
+                stru = self.structure.choice.as_emoji(),
+                com = self.completeness.choice.as_emoji()
+            ))
+        }
+    }
+}
+
 #[derive(Default, Serialize, Deserialize)]
 pub struct Group {
     pub subject: subject::Group,
     pub expressive: expressive::Group,
+    pub content: content::Group,
 }
 
 impl MetaGroup for Group {}
