@@ -3,7 +3,10 @@ use std::ops::{Deref, DerefMut};
 use egui::{Button, DragValue, Sense, Widget};
 
 use crate::{
-    types::rank::{sitcon_gdsc, Item, ItemGroup, MetaGroup, MutableMetaGroup, StandardChoice},
+    types::rank::{
+        sitcon_gdsc, CommentableItemGroup, Item, ItemGroup, MetaGroup, MutableMetaGroup,
+        StandardChoice,
+    },
     ui::ReviewToolApp,
 };
 
@@ -20,20 +23,20 @@ trait ReviewedExt {
 
 impl<'a> RankComponent<'a, sitcon_gdsc::Group> {
     fn show(&mut self, ui: &mut eframe::egui::Ui) {
-        render_item_group(&mut self.0.subject, ui, |ui, group| {
+        render_item_group_with_comment(&mut self.0.subject, ui, |ui, group| {
             ui.add(&mut ChoiceWidget::new(&mut group.student_related));
             ui.add(&mut ChoiceWidget::new(&mut group.community_related));
             ui.add(&mut ChoiceWidget::new(&mut group.coding_related));
             ui.add(&mut ChoiceWidget::new(&mut group.floss_related));
         });
 
-        render_item_group(&mut self.0.expressive, ui, |ui, group| {
+        render_item_group_with_comment(&mut self.0.expressive, ui, |ui, group| {
             ui.add(&mut ChoiceWidget::new(&mut group.organized));
             ui.add(&mut ChoiceWidget::new(&mut group.fluent));
             ui.add(&mut ChoiceWidget::new(&mut group.completeness));
         });
 
-        render_item_group(&mut self.0.content, ui, |ui, group| {
+        render_item_group_with_comment(&mut self.0.content, ui, |ui, group| {
             ui.add(&mut ChoiceWidget::new(&mut group.knowledges));
             ui.add(&mut ChoiceWidget::new(&mut group.experiences));
             ui.add(&mut ChoiceWidget::new(&mut group.uniqueness));
@@ -87,10 +90,22 @@ impl RankExt for ReviewToolApp<sitcon_gdsc::Group> {
     }
 }
 
-fn render_item_group<G: ItemGroup>(
+fn render_item_group_with_comment<G: CommentableItemGroup>(
     group: &mut G,
     ui: &mut eframe::egui::Ui,
     add_choice_widget: impl FnOnce(&mut eframe::egui::Ui, &mut G),
+) {
+    render_item_group_advanced(group, ui, add_choice_widget, |ui, group| {
+        ui.label("評論");
+        ui.text_edit_multiline(group.comment_mut());
+    })
+}
+
+fn render_item_group_advanced<G: ItemGroup>(
+    group: &mut G,
+    ui: &mut eframe::egui::Ui,
+    add_choice_widget: impl FnOnce(&mut eframe::egui::Ui, &mut G),
+    right_pane_bottom: impl FnOnce(&mut eframe::egui::Ui, &mut G),
 ) {
     ui.heading(group.name());
     group.description().map(|d| ui.label(d));
@@ -112,7 +127,9 @@ fn render_item_group<G: ItemGroup>(
                 });
 
                 ui.label("分數描述");
-                ui.text_edit_multiline(&mut group.score_description().unwrap_or_default())
+                ui.text_edit_multiline(&mut group.score_description().unwrap_or_default());
+
+                right_pane_bottom(ui, group);
             });
             ui.end_row();
         });
