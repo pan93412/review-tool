@@ -48,25 +48,18 @@ impl<M: MetaGroup + DeserializeOwned> ReviewToolApp<M> {
         cc: &eframe::CreationContext<'_>,
         manuscripts: &ManuscriptDatabase,
     ) -> GroupMetaDatabase<M> {
-        match cc.storage {
-            Some(storage) => {
-                let serialized_rank = storage.get_string("rank");
-
-                if let Some(serialized_rank) = serialized_rank {
-                    match serde_yaml::from_str::<'_, GroupMetaDatabase<M>>(&serialized_rank) {
-                        Ok(rank) => Some(rank),
-                        Err(e) => {
-                            tracing::warn!("failed to deserialize rank: {}", e);
-                            None
-                        }
-                    }
-                } else {
-                    None
-                }
-            }
-            None => None,
-        }
-        .unwrap_or(GroupMetaDatabase::with_capacity(manuscripts.len()))
+        cc.storage
+            .and_then(|storage| storage.get_string("rank"))
+            .and_then(|r| {
+                serde_yaml::from_str::<'_, GroupMetaDatabase<M>>(&r).map_or_else(
+                    |e| {
+                        tracing::warn!("failed to deserialize rank: {}", e);
+                        None
+                    },
+                    Some,
+                )
+            })
+            .unwrap_or(GroupMetaDatabase::with_capacity(manuscripts.len()))
     }
 }
 
