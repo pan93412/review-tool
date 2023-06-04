@@ -39,7 +39,7 @@ impl<M: MetaGroup> ReviewToolApp<M> {
             ui.separator();
             if let Some(s) = frame.storage_mut() {
                 if ui.button("Dump").clicked() {
-                    tracing::info!("Result: {}", s.get_string(RANK_KEY).unwrap_or_default());
+                    println!("{}", s.get_string(RANK_KEY).unwrap_or_default());
                     self.state.dump();
                 }
             }
