@@ -48,10 +48,22 @@ pub trait ItemGroup {
 }
 
 /// A group of [`ItemGroup`] – we called it *meta*.
-pub trait MetaGroup {}
+pub trait MetaGroup {
+    /// Is all of the items in this meta group reviewed?
+    fn reviewed(&self) -> bool;
+}
+
+pub trait MutableMetaGroup: MetaGroup {
+    /// Change the review status of this meta group.
+    fn reviewed_mut(&mut self) -> &mut bool;
+}
 
 // No meta group.
-impl MetaGroup for () {}
+impl MetaGroup for () {
+    fn reviewed(&self) -> bool {
+        false
+    }
+}
 
 /// The database of manuscript id to meta group.
 ///

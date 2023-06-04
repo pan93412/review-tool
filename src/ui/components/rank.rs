@@ -3,15 +3,19 @@ use std::ops::{Deref, DerefMut};
 use egui::{DragValue, Widget};
 
 use crate::{
-    types::rank::{sitcon_gdsc, Item, ItemGroup, MetaGroup, StandardChoice},
+    types::rank::{sitcon_gdsc, Item, ItemGroup, MetaGroup, MutableMetaGroup, StandardChoice},
     ui::ReviewToolApp,
 };
 
 pub struct RankComponent<'a, M: MetaGroup>(pub(crate) &'a mut M);
 
 /// Add `rank()` to Review Tool App. This trait is for specialization.
-pub(crate) trait AppRankExtension {
+pub(crate) trait RankExt {
     fn rank(&mut self, ui: &mut eframe::egui::Ui);
+}
+
+trait ReviewedExt {
+    fn show_reviewed_button(&mut self, ui: &mut eframe::egui::Ui);
 }
 
 impl<'a> RankComponent<'a, sitcon_gdsc::Group> {
@@ -39,15 +43,46 @@ impl<'a> RankComponent<'a, sitcon_gdsc::Group> {
     }
 }
 
-impl<M: MetaGroup> AppRankExtension for ReviewToolApp<M> {
+impl<M: MetaGroup> RankComponent<'_, M> {
+    fn reviewed_text(&self) -> &str {
+        if self.0.reviewed() {
+            "✅ Reviewed"
+        } else {
+            "❌ Reviewed"
+        }
+    }
+}
+
+impl<M: MetaGroup> ReviewedExt for RankComponent<'_, M> {
+    default fn show_reviewed_button(&mut self, ui: &mut eframe::egui::Ui) {
+        ui.button(self.reviewed_text())
+            .on_hover_text("Unable to switch this state");
+    }
+}
+
+impl<M: MutableMetaGroup> ReviewedExt for RankComponent<'_, M> {
+    fn show_reviewed_button(&mut self, ui: &mut eframe::egui::Ui) {
+        let response = ui
+            .button(self.reviewed_text())
+            .on_hover_text("Click to switch this state");
+
+        if response.clicked() {
+            *self.0.reviewed_mut() = !self.0.reviewed();
+        }
+    }
+}
+
+impl<M: MetaGroup> RankExt for ReviewToolApp<M> {
     default fn rank(&mut self, ui: &mut eframe::egui::Ui) {
         ui.label("This meta group has not been supported, sorry :(");
     }
 }
 
-impl AppRankExtension for ReviewToolApp<sitcon_gdsc::Group> {
+impl RankExt for ReviewToolApp<sitcon_gdsc::Group> {
     fn rank(&mut self, ui: &mut eframe::egui::Ui) {
-        RankComponent(self.get_current_rank_or_set_default()).show(ui)
+        let mut c = RankComponent(self.get_current_rank_or_set_default());
+        c.show_reviewed_button(ui);
+        c.show(ui);
     }
 }
 

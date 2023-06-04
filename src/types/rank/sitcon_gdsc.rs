@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::MetaGroup;
+use super::{MetaGroup, MutableMetaGroup};
 
 /// 主題相關：和學生、社群以及程式相關的議題，且與 FLOSS（自由/開放原始碼軟體）相關。
 pub mod subject {
@@ -192,12 +192,25 @@ pub mod content {
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct Group {
+    /// Have we completed the review of this group?
+    pub reviewed: bool,
+
     pub subject: subject::Group,
     pub expressive: expressive::Group,
     pub content: content::Group,
 }
 
-impl MetaGroup for Group {}
+impl MetaGroup for Group {
+    fn reviewed(&self) -> bool {
+        self.reviewed
+    }
+}
+
+impl MutableMetaGroup for Group {
+    fn reviewed_mut(&mut self) -> &mut bool {
+        &mut self.reviewed
+    }
+}
 
 macro_rules! new_rank {
     ($name:ident, $display_name:expr, $description:expr) => {

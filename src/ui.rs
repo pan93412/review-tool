@@ -16,7 +16,7 @@ use crate::types::{
     ManuscriptDatabase, ManuscriptId, RcManuscript,
 };
 
-use self::{components::rank::AppRankExtension, fonts::create_font_def};
+use self::{components::rank::RankExt, fonts::create_font_def};
 
 const RANK_KEY: &str = "rank";
 
