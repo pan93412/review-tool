@@ -1,5 +1,11 @@
 //! The application state for users.
 
+#[cfg(not(target_family = "wasm"))]
+use std::time;
+
+#[cfg(target_family = "wasm")]
+use web_time as time;
+
 type StateBit = u64;
 
 /// The max available number of states.
@@ -23,8 +29,8 @@ const STATE_DUMP: StateBit = 0b100;
 /// You probably not need to change it.
 pub struct State {
     bit: StateBit,
-    expired_after: [Option<std::time::Duration>; N],
-    triggered_at: [Option<std::time::Instant>; N],
+    expired_after: [Option<time::Duration>; N],
+    triggered_at: [Option<time::Instant>; N],
 }
 
 impl Default for State {
@@ -80,8 +86,8 @@ macro_rules! register_state {
         //
         // For example, the timer of 0b100 (4) state will be
         // stored in the index #4 of the array.
-        $self.triggered_at[$state as usize] = Some(std::time::Instant::now());
-        $self.expired_after[$state as usize] = Some(std::time::Duration::from_secs($dur_sec));
+        $self.triggered_at[$state as usize] = Some(time::Instant::now());
+        $self.expired_after[$state as usize] = Some(time::Duration::from_secs($dur_sec));
     };
 }
 

@@ -39,7 +39,16 @@ impl<M: MetaGroup> ReviewToolApp<M> {
             ui.separator();
             if let Some(s) = frame.storage_mut() {
                 if ui.button("Dump").clicked() {
-                    println!("{}", s.get_string(RANK_KEY).unwrap_or_default());
+                    #[cfg(not(target_family = "wasm"))]
+                    {
+                        println!("{}", s.get_string(RANK_KEY).unwrap_or_default());
+                    }
+
+                    #[cfg(target_family = "wasm")]
+                    {
+                        web_sys::console::log_1(&s.get_string(RANK_KEY).unwrap_or_default().into());
+                    }
+
                     self.state.dump();
                 }
             }
