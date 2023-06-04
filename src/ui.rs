@@ -33,7 +33,22 @@ impl<M: MetaGroup + DeserializeOwned> ReviewToolApp<M> {
         manuscripts: ManuscriptDatabase,
     ) -> Result<Self, Error> {
         let first_manuscript = *manuscripts.first().ok_or(Error::NoManuscript)?;
-        let rank = match cc.storage {
+        let rank = Self::retrieve_rank(cc, &manuscripts);
+
+        cc.egui_ctx.set_fonts(create_font_def());
+
+        Ok(Self {
+            rank_groups: rank,
+            manuscripts,
+            current_selected: first_manuscript,
+        })
+    }
+
+    fn retrieve_rank(
+        cc: &eframe::CreationContext<'_>,
+        manuscripts: &ManuscriptDatabase,
+    ) -> GroupMetaDatabase<M> {
+        match cc.storage {
             Some(storage) => {
                 let serialized_rank = storage.get_string("rank");
 
@@ -51,15 +66,7 @@ impl<M: MetaGroup + DeserializeOwned> ReviewToolApp<M> {
             }
             None => None,
         }
-        .unwrap_or(GroupMetaDatabase::with_capacity(manuscripts.len()));
-
-        cc.egui_ctx.set_fonts(create_font_def());
-
-        Ok(Self {
-            rank_groups: rank,
-            manuscripts,
-            current_selected: first_manuscript,
-        })
+        .unwrap_or(GroupMetaDatabase::with_capacity(manuscripts.len()))
     }
 }
 
