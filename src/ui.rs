@@ -62,7 +62,7 @@ impl<M: MetaGroup> RetrieveRankExt<M> for ReviewToolApp<M> {
         _cc: &eframe::CreationContext<'_>,
         _manuscripts: &ManuscriptDatabase,
     ) -> GroupMetaDatabase<M> {
-        GroupMetaDatabase::with_capacity(0)
+        GroupMetaDatabase::new()
     }
 }
 

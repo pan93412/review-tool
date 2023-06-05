@@ -89,6 +89,10 @@ impl<M: MetaGroup + std::fmt::Debug> std::fmt::Debug for GroupMetaDatabase<M> {
 }
 
 impl<M: MetaGroup> GroupMetaDatabase<M> {
+    pub fn new() -> Self {
+        Self(HashMap::new())
+    }
+
     pub fn with_capacity(cap: usize) -> Self {
         Self(HashMap::with_capacity(cap))
     }
