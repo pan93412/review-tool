@@ -37,6 +37,8 @@ trunk serve
 
 本程式已經過大量抽象，可輕鬆支援 SITCON@GDSC 以外的審稿模式。
 
+更詳細內容可執行 `cargo doc --document-private-items` 產生文件。
+
 ```plain
 *
  `-- lib (通用演算法)
